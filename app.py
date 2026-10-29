@@ -135,7 +135,7 @@ footer {display:none !important;}
 theme = gr.themes.Soft(primary_hue="indigo", secondary_hue="purple",
                        radius_size="lg", font=["Inter", "system-ui", "sans-serif"])
 
-with gr.Blocks(theme=theme, css=CSS, title="CodeAlpha · Object Detection") as demo:
+with gr.Blocks(title="CodeAlpha · Object Detection") as demo:
     gr.HTML("""
       <div id='hero'>
         <h1>🎥 Object Detection &amp; Tracking</h1>
@@ -186,4 +186,4 @@ with gr.Blocks(theme=theme, css=CSS, title="CodeAlpha · Object Detection") as d
 
 
 if __name__ == "__main__":
-    demo.launch(inbrowser=True)
+    demo.launch(inbrowser=True, theme=theme, css=CSS)
