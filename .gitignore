@@ -1,0 +1,14 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.pt
+yolov8*.pt
+music_model.pt
+vocab.json
+generated.mid
+*.mp4
+codealpha_tracked.mp4
+.DS_Store
+.vscode/
+.idea/

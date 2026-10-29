@@ -1,0 +1,5 @@
+# Object Detection & Tracking - all free & open-source, runs locally.
+ultralytics>=8.3        # YOLOv8 detection + built-in ByteTrack tracking
+opencv-python>=4.8      # video/frame handling + drawing (pulled by ultralytics too)
+gradio>=4.0             # smooth web UI
+# torch / torchvision are installed automatically as ultralytics dependencies.
