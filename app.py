@@ -24,8 +24,23 @@ import gradio as gr
 
 from src.detector import ObjectDetector
 
-# One shared detector for the whole app (weights load once).
-DETECTOR = ObjectDetector("yolov8n.pt")
+# Available models: trade speed for accuracy. Nano is fast and loads by default;
+# bigger models detect smaller / more distant objects but run slower.
+MODELS = {
+    "Nano — fastest": "yolov8n.pt",
+    "Small — balanced": "yolov8s.pt",
+    "Medium — most accurate": "yolov8m.pt",
+}
+
+# Detectors are created on demand and cached, so each model loads only once.
+_DETECTORS = {}
+
+
+def get_detector(model_label):
+    model_file = MODELS.get(model_label, "yolov8n.pt")
+    if model_file not in _DETECTORS:
+        _DETECTORS[model_file] = ObjectDetector(model_file)
+    return _DETECTORS[model_file]
 
 
 # --------------------------------------------------------------------- helpers
@@ -48,18 +63,19 @@ def _stats_html(title, total, by_class, extra=None):
 
 
 # --------------------------------------------------------------------- image
-def run_image(image, conf):
+def run_image(image, conf, model):
     if image is None:
         return None, _stats_html("Detection", 0, {})
-    annotated, stats = DETECTOR.detect_image(image, conf=conf)
+    annotated, stats = get_detector(model).detect_image(image, conf=conf)
     return annotated, _stats_html("Detection", stats["total"], stats["by_class"])
 
 
 # --------------------------------------------------------------------- video
-def run_video(video_path, conf, progress=gr.Progress()):
+def run_video(video_path, conf, model, progress=gr.Progress()):
     if not video_path:
         return None, _stats_html("Video Tracking", 0, {})
 
+    detector = get_detector(model)
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS) or 25
     w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -76,7 +92,7 @@ def run_video(video_path, conf, progress=gr.Progress()):
         if not ok:
             break
         frame_no += 1
-        annotated, stats = DETECTOR.track_frame(frame, conf=conf)
+        annotated, stats = detector.track_frame(frame, conf=conf)
         writer.write(annotated)
 
         # Remember each tracking id's class so we can count unique objects.
@@ -98,12 +114,12 @@ def run_video(video_path, conf, progress=gr.Progress()):
 
 
 # --------------------------------------------------------------------- webcam
-def run_webcam(frame, conf):
+def run_webcam(frame, conf, model):
     """Live stream handler: frame is an RGB numpy array from the browser camera."""
     if frame is None:
         return None, _stats_html("Live", 0, {})
     bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-    annotated, stats = DETECTOR.track_frame(bgr, conf=conf)
+    annotated, stats = get_detector(model).track_frame(bgr, conf=conf)
     rgb = cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB)
     extra = f"🟢 Live tracking · {len(stats.get('ids', []))} active IDs"
     return rgb, _stats_html("Live", stats["total"], stats["by_class"], extra=extra)
@@ -142,6 +158,10 @@ with gr.Blocks(title="CodeAlpha · Object Detection") as demo:
         <p>Real-time AI vision with YOLOv8 · detect, track &amp; count — CodeAlpha AI Internship</p>
       </div>""")
 
+    model_dd = gr.Dropdown(
+        list(MODELS), value="Nano — fastest", label="🧠 AI Model",
+        info="Bigger models detect smaller / distant objects but run slower.")
+
     with gr.Tabs():
         # ---- Image ----
         with gr.Tab("🖼️  Image"):
@@ -154,7 +174,7 @@ with gr.Blocks(title="CodeAlpha · Object Detection") as demo:
                 with gr.Column(scale=3):
                     img_out = gr.Image(label="Result", height=380)
                     img_stats = gr.HTML(_stats_html("Detection", 0, {}))
-            img_btn.click(run_image, [img_in, img_conf], [img_out, img_stats])
+            img_btn.click(run_image, [img_in, img_conf, model_dd], [img_out, img_stats])
 
         # ---- Video ----
         with gr.Tab("🎬  Video"):
@@ -167,7 +187,7 @@ with gr.Blocks(title="CodeAlpha · Object Detection") as demo:
                 with gr.Column(scale=3):
                     vid_out = gr.Video(label="Tracked result", autoplay=True)
                     vid_stats = gr.HTML(_stats_html("Video Tracking", 0, {}))
-            vid_btn.click(run_video, [vid_in, vid_conf], [vid_out, vid_stats])
+            vid_btn.click(run_video, [vid_in, vid_conf, model_dd], [vid_out, vid_stats])
 
         # ---- Webcam ----
         with gr.Tab("📷  Live Webcam"):
@@ -181,7 +201,7 @@ with gr.Blocks(title="CodeAlpha · Object Detection") as demo:
                 with gr.Column(scale=3):
                     cam_out = gr.Image(label="Live result", height=380)
                     cam_stats = gr.HTML(_stats_html("Live", 0, {}))
-            cam_in.stream(run_webcam, [cam_in, cam_conf], [cam_out, cam_stats],
+            cam_in.stream(run_webcam, [cam_in, cam_conf, model_dd], [cam_out, cam_stats],
                           stream_every=0.1, show_progress="hidden")
 
 
