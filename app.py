@@ -127,54 +127,54 @@ def run_webcam(frame, conf, model):
 
 # --------------------------------------------------------------------- UI/CSS
 CSS = """
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@600;700&display=swap');
 .gradio-container{
-  --body-background-fill:#09090f; --background-fill-primary:#09090f;
+  --body-background-fill:#060a12; --background-fill-primary:#060a12;
   --background-fill-secondary:rgba(255,255,255,.03);
-  --block-background-fill:rgba(255,255,255,.04);
-  --block-border-color:rgba(255,255,255,.07); --border-color-primary:rgba(255,255,255,.07);
-  --body-text-color:#ededf3; --body-text-color-subdued:#9a9aa8;
-  --button-primary-background-fill:linear-gradient(92deg,#8b5cf6,#ec4899);
-  --button-primary-background-fill-hover:linear-gradient(92deg,#a78bfa,#f472b6);
-  --button-primary-text-color:#fff; --button-primary-border-color:transparent;
-  --input-background-fill:rgba(255,255,255,.045); --block-radius:18px;
+  --block-background-fill:rgba(255,255,255,.035);
+  --block-border-color:rgba(56,189,248,.14); --border-color-primary:rgba(56,189,248,.14);
+  --body-text-color:#e7f3f9; --body-text-color-subdued:#8aa0b0;
+  --button-primary-background-fill:linear-gradient(92deg,#22d3ee,#3b82f6);
+  --button-primary-background-fill-hover:linear-gradient(92deg,#67e8f9,#60a5fa);
+  --button-primary-text-color:#041018; --button-primary-border-color:transparent;
+  --input-background-fill:rgba(255,255,255,.04); --block-radius:12px;
   font-family:'Inter',system-ui,sans-serif !important; max-width:1150px !important; margin:auto !important;}
 body{background:
-  radial-gradient(900px 500px at 82% -12%, rgba(236,72,153,.13), transparent 60%),
-  radial-gradient(900px 520px at 8% -4%, rgba(139,92,246,.15), transparent 56%),
-  #09090f !important;}
+  radial-gradient(900px 500px at 82% -12%, rgba(34,211,238,.14), transparent 60%),
+  radial-gradient(900px 520px at 8% -4%, rgba(59,130,246,.16), transparent 56%),
+  #060a12 !important;}
 #hero{padding:34px 8px 14px; text-align:center;}
 #hero h1{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:2.3rem; margin:0;
-  letter-spacing:-.5px; background:linear-gradient(90deg,#c4b5fd,#f9a8d4);
+  letter-spacing:-.5px; background:linear-gradient(90deg,#67e8f9,#93c5fd);
   -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;}
-#hero p{color:#9a9aa8; margin:9px 0 0; font-size:.97rem;}
-.block,.form{backdrop-filter:blur(14px); box-shadow:0 10px 40px rgba(0,0,0,.32) !important;}
+#hero p{color:#8aa0b0; margin:9px 0 0; font-size:.97rem; letter-spacing:.3px;}
+.block,.form{backdrop-filter:blur(14px); box-shadow:0 10px 40px rgba(0,8,20,.4) !important;}
 .block:has(.options),.form:has(.options){overflow:visible !important; backdrop-filter:none !important;}
-button.primary,button[variant=primary]{font-weight:600 !important; letter-spacing:.3px;
-  box-shadow:0 10px 26px rgba(236,72,153,.26) !important; transition:transform .15s ease;}
+button.primary,button[variant=primary]{font-weight:700 !important; letter-spacing:.3px;
+  box-shadow:0 10px 26px rgba(34,211,238,.28) !important; transition:transform .15s ease;}
 button.primary:hover{transform:translateY(-2px);}
-label span{color:#b9b9c6 !important; font-weight:500 !important;}
-ul.options,.options,div[role=listbox]{background:#15151e !important;
-  border:1px solid rgba(255,255,255,.12) !important; border-radius:12px !important;
-  box-shadow:0 14px 40px rgba(0,0,0,.55) !important; z-index:1000 !important; backdrop-filter:none !important;}
-ul.options li,.options .item,li[role=option],[role=option]{color:#ededf3 !important; background:transparent !important;}
+label span{color:#a7bccb !important; font-weight:500 !important;}
+ul.options,.options,div[role=listbox]{background:#0c1622 !important;
+  border:1px solid rgba(56,189,248,.22) !important; border-radius:10px !important;
+  box-shadow:0 14px 40px rgba(0,8,20,.6) !important; z-index:1000 !important; backdrop-filter:none !important;}
+ul.options li,.options .item,li[role=option],[role=option]{color:#e7f3f9 !important; background:transparent !important;}
 ul.options li:hover,.options .item:hover,.options .item.selected,li[role=option]:hover{
-  background:rgba(139,92,246,.30) !important; color:#fff !important;}
-.stat-card{background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:18px;}
-.stat-title{font-size:.8rem; text-transform:uppercase; letter-spacing:1px; color:#9a9aa8;}
-.stat-total{font-size:2.6rem; font-weight:800; line-height:1; color:#f3f3f8;}
-.stat-total span{font-size:.85rem; font-weight:500; color:#9a9aa8; margin-left:8px;}
-.stat-extra{margin:8px 0 4px; font-size:.9rem; font-weight:600; color:#c4b5fd;}
+  background:rgba(34,211,238,.22) !important; color:#fff !important;}
+.stat-card{background:rgba(255,255,255,.035); border:1px solid rgba(56,189,248,.16); border-radius:14px; padding:18px;}
+.stat-title{font-size:.78rem; text-transform:uppercase; letter-spacing:2px; color:#5e9dc4;}
+.stat-total{font-family:'JetBrains Mono',monospace; font-size:2.6rem; font-weight:700; line-height:1; color:#e7f3f9;}
+.stat-total span{font-family:'Inter'; font-size:.85rem; font-weight:500; color:#8aa0b0; margin-left:8px;}
+.stat-extra{margin:8px 0 4px; font-size:.9rem; font-weight:600; color:#67e8f9;}
 .stat-list{margin-top:12px; display:flex; flex-direction:column; gap:6px;}
 .stat-row{display:flex; justify-content:space-between; align-items:center;
-  padding:8px 12px; border-radius:10px; background:rgba(255,255,255,.04);}
-.stat-pill{background:linear-gradient(92deg,#8b5cf6,#ec4899); color:#fff; border-radius:20px;
-  padding:2px 11px; font-weight:700; font-size:.85rem;}
-.stat-empty{color:#9a9aa8; padding:10px 0;}
+  padding:8px 12px; border-radius:8px; background:rgba(56,189,248,.06);}
+.stat-pill{background:linear-gradient(92deg,#22d3ee,#3b82f6); color:#041018; border-radius:20px;
+  padding:2px 11px; font-weight:700; font-size:.85rem; font-family:'JetBrains Mono',monospace;}
+.stat-empty{color:#8aa0b0; padding:10px 0;}
 footer{display:none !important;}
 """
 
-theme = gr.themes.Base(primary_hue="violet", neutral_hue="slate")
+theme = gr.themes.Base(primary_hue="cyan", neutral_hue="slate")
 
 with gr.Blocks(title="CodeAlpha · Object Detection") as demo:
     gr.HTML("""
